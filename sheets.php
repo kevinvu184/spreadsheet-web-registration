@@ -34,4 +34,4 @@ if (empty($values)) {
     }
 }
 
-header("Location: /np/main.php");
+header("Location: ./main.php");
