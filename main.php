@@ -90,6 +90,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .even {
         background-color: #dddddd; }
+
+        #dateErr, #hourErr,#pid1Err,#pid2Err{
+            color:red;
+        }
     </style>
 
     <script src="./script.js"></script>
@@ -104,15 +108,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h3>If you do task B (work in group) please put your partner id. Only one of you need to register.</h3>
             <h3>Enter student id begin with Upper 'S', i.e. S123456</h3>
             
-            <form action="#" method="POST">
+            <form action="#" method="POST" onsubmit='return  validateFormChooseSlot()'>
                 <h4>
                     <label>Partner 1</label>
-                    <input type="text" name="pid1" placeholder="Individual - Leave blank">
+                    <input id='pid1' type="text" name="pid1" placeholder="Individual - Leave blank">
+                    <div id='pid1Err'></div>
                 </h4>
 
                 <h4>
                     <label>Partner 2</label>
-                    <input type="text" name="pid2" placeholder="Individual - Leave blank">
+                    <input id='pid2' type="text" name="pid2" placeholder="Individual - Leave blank">
+                    <div id='pid2Err'></div>
                 </h4>
 
                 <h4>
@@ -120,6 +126,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <select id="date" name="date" onchange='limitHour();'>
                         <script>seedDay()</script>
                     </select>
+                    <div id='dateErr'></div>
                 </h4>
 
                 <h4>
@@ -127,6 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <select id="hour" name="hour">
                         <script>renderHour()</script>
                     </select>
+                    <div id='hourErr'></div>
                 </h4>
 
                 <input type="submit" name="submit"/>

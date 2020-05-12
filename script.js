@@ -76,3 +76,68 @@ function seedDay() {
     `;
     document.getElementById('date').innerHTML = dayAvailable;
 }
+
+var patternIDNum = /^S{1}([0-9]{7})$/;
+
+
+function validateFormChooseSlot(){
+    var noErrChooseSlot = true;
+    
+
+    var firstPartnerId = document.getElementById('pid1').value;
+    var secondPartnerId = document.getElementById('pid2').value;
+
+    if(firstPartnerId !== ''){
+        if(!patternIDNum.test(firstPartnerId)){
+            document.getElementById('pid1Err').innerHTML='<small>Incorrect ID format (check uppercase S,...)</small>';
+            noErrChooseSlot=false;
+        }
+    }else{
+        document.getElementById('pid1Err').innerHTML='';
+    }
+
+    if(secondPartnerId !== ''){
+        if(!patternIDNum.test(secondPartnerId)){
+            document.getElementById('pid2Err').innerHTML='<small>Incorrect ID format (check uppercase S,...)</small>';
+            noErrChooseSlot=false;
+        }
+    }else{
+        document.getElementById('pid2Err').innerHTML='';
+    }
+
+    var dateElement = document.getElementById('date');
+    var dateValue = dateElement.options[dateElement.selectedIndex].text;
+    if(dateValue ==='Select date'){
+        noErrChooseSlot=false;
+        document.getElementById('dateErr').innerHTML='<small>Please pick a date</small>';
+    }else{
+        document.getElementById('dateErr').innerHTML='';
+    }   
+
+    var hourElement = document.getElementById('hour');
+    var hourValue = hourElement.options[hourElement.selectedIndex].text;
+    if(hourValue === 'Please select date first'||hourValue ==='Select time slot'){
+        noErrChooseSlot = false;
+        document.getElementById('hourErr').innerHTML='<small>Please pick an hour</small>';
+    }else{
+        document.getElementById('hourErr').innerHTML='';
+
+    }
+
+    return noErrChooseSlot;
+}
+
+function validateFormLogin(){
+    var noErrLogin=true;
+
+    var loginValue = document.getElementById('loginID').value;
+    
+    if(!patternIDNum.test(loginValue)){
+        noErrLogin=false;
+        document.getElementById('loginErr').innerHTML='<small>Incorrect ID format (check uppercase S,...)</small>';
+    }else{
+        document.getElementById('loginErr').innerHTML='';
+    }
+
+    return noErrLogin;
+}

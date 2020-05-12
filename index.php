@@ -36,13 +36,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <html>
-<head></head>
+<head>
+<style>
+        #loginErr{
+            color:red;
+            font-size:12;
+        }
+    </style>
+    <script src="./script.js"></script>
+</head>
 <body>
-    <h1>Network Programming - Demo Slot Check</h1>
-    <form action="#" method="POST">
+    <h1>Network Programming - Demo Slot Registration</h1>
+    <form action="#" method="POST" onsubmit='return validateFormLogin();'>
         <h3>Enter your student id begin with Upper 'S', i.e. S123456</h3>
         <h3>
-            <input type="text" name="id">
+            <input type="text" name="id" id='loginID'>
+            <div id='loginErr'></div>
         </h3>
         <input type="submit" name="submit"/>
         
