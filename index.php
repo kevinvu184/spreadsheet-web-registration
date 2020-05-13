@@ -3,7 +3,7 @@ session_start();
 
 require_once "./client.php";
 
-$id = $tid = "";
+$id = $slot_code = "";
 $inputErr = FALSE;
 
 // Query student from spreadsheet
@@ -23,11 +23,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Check if the student have registered or not.
             // -> have: show the registered date, haven't: direct to register page.
             if ($row[1] == NULL) {
-                $_SESSION['values'] = $values;
                 $_SESSION['range'] = $row[2];
                 header("Location: ./main.php");
             } else {
-                $tid = $row[1];
+                $slot_code = $row[1];
             }
             break;
         }
@@ -42,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <form action="#" method="POST">
         <h3>Enter your student id begin with Upper 'S', i.e. S123456</h3>
         <h3>
-            <input type="text" name="id">
+            <input type="text" name="id" required>
         </h3>
         <input type="submit" name="submit"/>
         
@@ -52,9 +51,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h3>Please try again a few more times. If it still does not work, please let your tutor know.</h3>
         <?php endif ?>
         
-        <?php if ($tid != ""): ?>
+        <?php if ($slot_code != ""): ?>
             <h4>You were registered the following date:</h4>
-            <h1><?php echo giveDate($tid) . " at " . giveHour($tid) ?></h1>
+            <h1><?php echo giveDate($slot_code) . " at " . giveHour($slot_code) ?></h1>
         <?php endif ?>
     </form>
 </body>

@@ -1,9 +1,14 @@
 <?php
 session_start();
 
+// Not allow student to manual type in url to direct to this page
+if (empty($_SESSION['range'])) {
+    header("Location: ./index.php");
+}
+
 require_once "./client.php";
 
-$pid1 = $pid2 = $date = $hour = "";
+$date = $hour = "";
 $inputErr = FALSE;
 
 // Query slot from spreadsheet
@@ -13,11 +18,8 @@ $values = $response->getValues();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $inputErr = TRUE;
-    $pid1 = $_POST["pid1"];
-    $pid2 = $_POST["pid2"];
     $date = $_POST["date"];
     $hour = $_POST["hour"];
-    
     
     // Only query spreadsheet if there are date and hour.
     if ($date != "" && $hour != "") {
@@ -32,30 +34,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($code == $row[0]) {
                 if ($row[1] == 0) {
                     $inputErr = FALSE;
-
+                    
+                    // Update the Slot sheet
                     updateSpreadSheet("1", $sheet2, $row[2], $service, $spreadsheetId, $params);
 
+                    // Update the Student sheet
                     updateSpreadSheet($row[0], $sheet1, $_SESSION['range'], $service, $spreadsheetId, $params);
 
-                    if ($pid1 != "") {
-                        foreach ($_SESSION['values'] as $pid1row) {
-                            if ($pid1row[0] == $pid1 && $pid1row[1] == NULL) {
-                                $pid1range = $pid1row[2];
-                                updateSpreadSheet($row[0], $sheet1, $pid1range, $service, $spreadsheetId, $params);
-                                break;
-                            }
-                        }
-                    }
-
-                    if ($pid2 != "") {
-                        foreach ($_SESSION['values'] as $pid2row) {
-                            if ($pid2row[0] == $pid2 && $pid2row[1] == NULL) {
-                                $pid2range = $pid2row[2];
-                                updateSpreadSheet($row[0], $sheet1, $pid2range, $service, $spreadsheetId, $params);
-                                break;
-                            }
-                        }
-                    }
+                    session_unset();
                     header("Location: ./index.php");
                 }
                 break;
@@ -106,25 +92,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             <form action="#" method="POST">
                 <h4>
-                    <label>Partner 1</label>
-                    <input type="text" name="pid1" placeholder="Individual - Leave blank">
-                </h4>
-
-                <h4>
-                    <label>Partner 2</label>
-                    <input type="text" name="pid2" placeholder="Individual - Leave blank">
-                </h4>
-
-                <h4>
                     <label>Date</label>
-                    <select id="date" name="date" onchange='limitHour();'>
+                    <select id="date" name="date" onchange='limitHour();' required>
                         <script>seedDay()</script>
                     </select>
                 </h4>
 
                 <h4>
                     <label>Hour</label>
-                    <select id="hour" name="hour">
+                    <select id="hour" name="hour" required>
                         <script>renderHour()</script>
                     </select>
                 </h4>
