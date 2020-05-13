@@ -76,3 +76,19 @@ function seedDay() {
     `;
     document.getElementById('date').innerHTML = dayAvailable;
 }
+
+var sidRegex = /^S{1}([0-9]{7})$/;
+
+function validateFormLogin() {
+    var noLoginErr = false;
+    var input = document.getElementById('sid').value; 
+    console.log(input);
+
+    if (sidRegex.test(input)) {
+        noLoginErr = true;        
+        document.getElementById('loginErr').innerHTML = '';
+    } else {
+        document.getElementById('loginErr').innerHTML = 'Incorrect ID format (check uppercase S).';
+    }
+    return noLoginErr;
+}

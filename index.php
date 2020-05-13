@@ -1,6 +1,11 @@
 <?php
 session_start();
 
+// Not allow student to manual type in url to direct to this page
+if (!empty($_SESSION['range'])) {
+    session_unset();
+}
+
 require_once "./client.php";
 
 $id = $slot_code = "";
@@ -35,19 +40,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <html>
-<head></head>
+
+<head>
+    <script src="./script.js"></script>
+</head>
 <body>
     <h1>Network Programming - Demo Slot Check</h1>
-    <form action="#" method="POST">
+    <form action="#" method="POST" onsubmit="return validateFormLogin();">
         <h3>Enter your student id begin with Upper 'S', i.e. S123456</h3>
         <h3>
-            <input type="text" name="id" required>
+            <input type="text" name="id" id="sid" required>
         </h3>
         <input type="submit" name="submit"/>
         
+        <h3 style="color: red;" id="loginErr"></h3>
+
         <?php if ($inputErr == TRUE): ?>
             <h3 style="color: red;">Either invalid input or your student id does not exist in our database!
-            <br>You must enter a valid student id starting with 's'.</h3>
+            <br>You must enter a valid student id starting with upper 'S'.</h3>
             <h3>Please try again a few more times. If it still does not work, please let your tutor know.</h3>
         <?php endif ?>
         
