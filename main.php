@@ -1,67 +1,156 @@
+<?php
+session_start();
+
+// Not allow student to manual type in url to direct to this page
+if (empty($_SESSION['range'])) {
+    header("Location: ./index.php");
+}
+
+require_once "./client.php";
+
+$date = $hour = "";
+$inputErr = FALSE;
+
+// Query slot from spreadsheet
+$range = $sheet2 . "!A2:C97";
+$response = $service->spreadsheets_values->get($spreadsheetId, $range);
+$values = $response->getValues();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $inputErr = TRUE;
+    $date = $_POST["date"];
+    $hour = $_POST["hour"];
+    
+    // Only query spreadsheet if there are date and hour.
+    if ($date != "" && $hour != "") {
+        $code = giveCode($date, $hour);
+        
+        // Query slot again (concurency issue) from spreadsheet
+        $response = $service->spreadsheets_values->get($spreadsheetId, $range);
+        $values = $response->getValues();
+
+        // Check if the slot have been taken
+        foreach ($values as $row) {
+            if ($code == $row[0]) {
+                if ($row[1] == 0) {
+                    $inputErr = FALSE;
+                    
+                    // Update the Slot sheet
+                    updateSpreadSheet("1", $sheet2, $row[2], $service, $spreadsheetId, $params);
+
+                    // Update the Student sheet
+                    updateSpreadSheet($row[0], $sheet1, $_SESSION['range'], $service, $spreadsheetId, $params);
+
+                    session_unset();
+                    header("Location: ./index.php");
+                }
+                break;
+            }
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 
+<html>
+
 <head>
-    <title>NP Demo | Register Demo</title>
+    <style>
+        .column {
+        float: left;
+        width: 33.33%; }
+
+        .row:after {
+        content: "";
+        display: table;
+        clear: both; }
+
+        table {
+        border-collapse: collapse;
+        width: 100%; }
+
+        td, th {
+        border: 1px solid #dddddd;
+        text-align: left; }
+
+        .even {
+        background-color: #dddddd; }
+    </style>
+
+    <script src="./script.js"></script>
 </head>
 
 <body>
-    <p>Hi <?php echo $_COOKIE['user_name']; ?>!<br>
-    Please register your demo below.
-    If you do task A (work individually) please skip partner field.<br>
-    If you do task B (work in group) please put your teamate id. Only one of you need to register.<br>
-    Thank you all!</p>
-    <form action="#" method="POST">
-        <div>
-            <label for="pid1">Partner 1</label>
-            <input id="pid1" type="text" placeholder="Individual - Leave blank" name="pid1">
-        </div>
-        <div>
-            <label for="pid2">partner 2</label>
-            <input id="pid2" type="text" placeholder="Individual - Leave blank" name="pid2">
-        </div>
-        <div>
-            <label for="date">Date</label>
-            <select id="date" name="date">
-                <option selected>Choose date...</option>
-                <optgroup label="Week 10">
-                    <option value="date1">Monday, 18 May 2020</option>
-                    <option value="date2">Tuesday, 19 May 2020</option>
-                    <option value="date3">Thursday, 21 May 2020</option>
-                    <option value="date4">Friday, 22 May 2020</option>
-                </optgroup>
-                <optgroup label="Week 11">
-                    <option value="date5">Monday, 25 May 2020</option>
-                    <option value="date6">Tuesday, 26 May 2020</option>
-                    <option value="date7">Thursday, 28 May 2020</option>
-                    <option value="date8">Friday, 29 May 2020</option>
-                </optgroup>
-            </select>
-        </div>
-        <div>
-            <label for="hour">Hour</label>
-            <select id="hour" name="hour">
-                <option selected>Choose hour...</option>
-                <option>09:00</option>
-                <option>10:00</option>
-                <option>11:00</option>
-                <option>14:00</option>
-                <option>15:00</option>
-                <option>16:00</option>
-                <option>17:00</option>
-            </select>
-        </div>
-        <div>    
-            <input type="radio" name="gender" id="team" value="team">
-            <label for="team">Ms Team</label>
+    <h1>Network Programming - Demo Register</h1>
+    
+    <div class="row">
+        <div class="column">
+            <h3>If you do task A (work individually) please skip partner field.</h3>
+            <h3>If you do task B (work in group) please put your partner id. Only one of you need to register.</h3>
+            <h3>Enter student id begin with Upper 'S', i.e. S123456</h3>
             
-            <input type="radio" name="gender" id="zoom" value="zoom">
-            <label for="zoom">zoom</label>
-            
-            <input type="radio" name="gender" id="collaborate-ultra" value="collaborate-ultra">
-            <label for="collaborate-ultra">Collaborate Ultra</label>
+            <form action="#" method="POST">
+                <h4>
+                    <label>Date</label>
+                    <select id="date" name="date" onchange='limitHour();' required>
+                        <script>seedDay()</script>
+                    </select>
+                </h4>
+
+                <h4>
+                    <label>Hour</label>
+                    <select id="hour" name="hour" required>
+                        <script>renderHour()</script>
+                    </select>
+                </h4>
+
+                <input type="submit" name="submit"/>
+
+                <?php if ($inputErr == TRUE): ?>
+                    <h3 style="color: red;">Either invalid input or your student id does not exist in 
+                    our database or the slot have been taken right before you submit.</h3>
+                    <h3>Please try again a few more times. If it still does not work, please let your tutor know.</h3>
+                <?php endif ?>
+            </form>
         </div>
-        <button type="submit" name="register">Register</button>
-    </form>
+
+        <div class="column">
+            <h2>Week 11 Available Slot</h2>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                </tr>
+                <?php foreach ($values as $row): ?>
+                    <?php if ($row[1] == 0 && isWeek11($row[0])): ?>
+                        <tr class="<?php echo (substr($row[0],0,2) == 18 || substr($row[0],0,2) == 21)? "even" :"odd"; ?>">
+                            <td><?php echo giveDate($row[0]); ?></td>
+                            <td><?php echo giveHour($row[0]); ?></td>
+                        </tr>
+                    <?php endif ?>
+                <?php endforeach ?>
+            </table>
+        </div>
+
+        <div class="column">
+            <h2>Week 12 Available Slot</h2>
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                </tr>
+                <?php foreach ($values as $row): ?>
+                    <?php if ($row[1] == 0 && !isWeek11($row[0])): ?>
+                        <tr class="<?php echo (substr($row[0],0,2) == 25 || substr($row[0],0,2) == 28)? "even" :"odd"; ?>">
+                            <td><?php echo giveDate($row[0]); ?></td>
+                            <td><?php echo giveHour($row[0]); ?></td>
+                        </tr>
+                    <?php endif ?>
+                <?php endforeach ?>
+            </table>
+        </div>
+    </div>
 </body>
 
 </html>
