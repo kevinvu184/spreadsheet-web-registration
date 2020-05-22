@@ -58,20 +58,21 @@ function renderHour() {
     document.getElementById('hour').innerHTML = '<option value="" selected>Please select date first</option>';
 }
 
+{/* <optgroup label="Week 11">
+    <option value="18">Monday, 18 May 2020</option>
+    <option value="19">Tuesday, 19 May 2020</option>
+    <option value="21">Thursday, 21 May 2020</option>
+    <option value="22">Friday, 22 May 2020</option>
+    
+    <option value="28">Thursday, 28 May 2020</option>
+    <option value="29">Friday, 29 May 2020</option>
+</optgroup> */}
 function seedDay() {
     let dayAvailable = `
     <option value="">Select date</option>
-    <optgroup label="Week 10">
-        <option value="18">Monday, 18 May 2020</option>
-        <option value="19">Tuesday, 19 May 2020</option>
-        <option value="21">Thursday, 21 May 2020</option>
-        <option value="22">Friday, 22 May 2020</option>
-    </optgroup>
-    <optgroup label="Week 11">
+    <optgroup label="Week 12">
         <option value="25">Monday, 25 May 2020</option>
-        <option value="26">Tuesday, 26 May 2020</option>
-        <option value="28">Thursday, 28 May 2020</option>
-        <option value="29">Friday, 29 May 2020</option>
+        <option value="26">Tuesday, 26 May 2020</option> 
     </optgroup>
     `;
     document.getElementById('date').innerHTML = dayAvailable;

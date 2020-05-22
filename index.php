@@ -29,7 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // -> have: show the registered date, haven't: direct to register page.
             if ($row[1] == NULL) {
                 $_SESSION['range'] = $row[2];
-                header("Location: ./main.php");
+                // header("Location: ./main.php");
+                header("Location: ./fengling.php");
             } else {
                 $slot_code = $row[1];
             }

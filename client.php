@@ -13,6 +13,7 @@ $service = new Google_Service_Sheets($client);
 $spreadsheetId = "1oF6Pu1tK-8WcfDQzwkCQepPyBpanp319MTk1VSXzEUs";
 $sheet1 = "student";
 $sheet2 = "slot";
+$sheet3 = "fengling";
 
 $params = [
     'valueInputOption' => 'USER_ENTERED'

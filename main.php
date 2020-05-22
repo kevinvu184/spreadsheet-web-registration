@@ -6,49 +6,49 @@ if (empty($_SESSION['range'])) {
     header("Location: ./index.php");
 }
 
-require_once "./client.php";
+// require_once "./client.php";
 
-$date = $hour = "";
-$inputErr = FALSE;
+// $date = $hour = "";
+// $inputErr = FALSE;
 
 // Query slot from spreadsheet
-$range = $sheet2 . "!A2:C97";
-$response = $service->spreadsheets_values->get($spreadsheetId, $range);
-$values = $response->getValues();
+// $range = $sheet2 . "!A2:C97";
+// $response = $service->spreadsheets_values->get($spreadsheetId, $range);
+// $values = $response->getValues();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $inputErr = TRUE;
-    $date = $_POST["date"];
-    $hour = $_POST["hour"];
+// if ($_SERVER["REQUEST_METHOD"] == "POST") {
+//     $inputErr = TRUE;
+//     $date = $_POST["date"];
+//     $hour = $_POST["hour"];
     
     // Only query spreadsheet if there are date and hour.
-    if ($date != "" && $hour != "") {
-        $code = giveCode($date, $hour);
+    // if ($date != "" && $hour != "") {
+    //     $code = giveCode($date, $hour);
         
         // Query slot again (concurency issue) from spreadsheet
-        $response = $service->spreadsheets_values->get($spreadsheetId, $range);
-        $values = $response->getValues();
+        // $response = $service->spreadsheets_values->get($spreadsheetId, $range);
+        // $values = $response->getValues();
 
         // Check if the slot have been taken
-        foreach ($values as $row) {
-            if ($code == $row[0]) {
-                if ($row[1] == 0) {
-                    $inputErr = FALSE;
+//         foreach ($values as $row) {
+//             if ($code == $row[0]) {
+//                 if ($row[1] == 0) {
+//                     $inputErr = FALSE;
                     
-                    // Update the Slot sheet
-                    updateSpreadSheet("1", $sheet2, $row[2], $service, $spreadsheetId, $params);
+//                     // Update the Slot sheet
+//                     updateSpreadSheet("1", $sheet2, $row[2], $service, $spreadsheetId, $params);
 
-                    // Update the Student sheet
-                    updateSpreadSheet($row[0], $sheet1, $_SESSION['range'], $service, $spreadsheetId, $params);
+//                     // Update the Student sheet
+//                     updateSpreadSheet($row[0], $sheet1, $_SESSION['range'], $service, $spreadsheetId, $params);
 
-                    session_unset();
-                    header("Location: ./index.php");
-                }
-                break;
-            }
-        }
-    }
-}
+//                     session_unset();
+//                     header("Location: ./index.php");
+//                 }
+//                 break;
+//             }
+//         }
+//     }
+// }
 ?>
 
 <!DOCTYPE html>
@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html>
 
 <head>
-    <style>
+    <!-- <style>
         .column {
         float: left;
         width: 33.33%; }
@@ -76,18 +76,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         .even {
         background-color: #dddddd; }
-    </style>
+    </style> -->
 
-    <script src="./script.js"></script>
+    <!-- <script src="./script.js"></script> -->
 </head>
 
 <body>
     <h1>Network Programming - Demo Register</h1>
     
-    <div class="row">
-        <div class="column">
+    <h3 style="color: red;">There is no available slot. Please contact your tutor to register the demo!</h3>
+
+    <!-- <div class="row"> -->
+        <!-- <div class="column">
             <h3>If you do task A (work individually) please skip partner field.</h3>
-            <h3>If you do task B (work in group) please put your partner id. Only one of you need to register.</h3>
+            <h3>If you do task B (work in group) please contact with your tutor for registration.</h3>
             <h3>Enter student id begin with Upper 'S', i.e. S123456</h3>
             
             <form action="#" method="POST">
@@ -113,9 +115,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h3>Please try again a few more times. If it still does not work, please let your tutor know.</h3>
                 <?php endif ?>
             </form>
-        </div>
+        </div> -->
 
-        <div class="column">
+        <!-- <div class="column">
             <h2>Week 11 Available Slot</h2>
             <table>
                 <tr>
@@ -131,9 +133,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php endif ?>
                 <?php endforeach ?>
             </table>
-        </div>
+        </div> -->
 
-        <div class="column">
+        <!-- <div class="column">
             <h2>Week 12 Available Slot</h2>
             <table>
                 <tr>
@@ -149,8 +151,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php endif ?>
                 <?php endforeach ?>
             </table>
-        </div>
-    </div>
+        </div> -->
+    <!-- </div> -->
 </body>
 
 </html>
