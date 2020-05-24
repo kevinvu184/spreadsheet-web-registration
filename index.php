@@ -1,9 +1,14 @@
 <?php
 session_start();
 
+// Not allow student to manual type in url to direct to this page
+if (!empty($_SESSION['range'])) {
+    session_unset();
+}
+
 require_once "./client.php";
 
-$id = $tid = "";
+$id = $slot_code = "";
 $inputErr = FALSE;
 
 // Query student from spreadsheet
@@ -23,11 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Check if the student have registered or not.
             // -> have: show the registered date, haven't: direct to register page.
             if ($row[1] == NULL) {
-                $_SESSION['values'] = $values;
                 $_SESSION['range'] = $row[2];
-                header("Location: ./main.php");
+                // header("Location: ./main.php");
+                header("Location: ./fengling.php");
             } else {
-                $tid = $row[1];
+                $slot_code = $row[1];
             }
             break;
         }
@@ -36,34 +41,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <html>
+
 <head>
-<style>
-        #loginErr{
-            color:red;
-            font-size:12;
-        }
-    </style>
     <script src="./script.js"></script>
 </head>
 <body>
-    <h1>Network Programming - Demo Slot Registration</h1>
-    <form action="#" method="POST" onsubmit='return validateFormLogin();'>
+    <h1>Network Programming - Demo Slot Check</h1>
+    <form action="#" method="POST" onsubmit="return validateFormLogin();">
         <h3>Enter your student id begin with Upper 'S', i.e. S123456</h3>
         <h3>
-            <input type="text" name="id" id='loginID'>
-            <div id='loginErr'></div>
+            <input type="text" name="id" id="sid" required>
         </h3>
         <input type="submit" name="submit"/>
         
+        <h3 style="color: red;" id="loginErr"></h3>
+
         <?php if ($inputErr == TRUE): ?>
             <h3 style="color: red;">Either invalid input or your student id does not exist in our database!
-            <br>You must enter a valid student id starting with 's'.</h3>
+            <br>You must enter a valid student id starting with upper 'S'.</h3>
             <h3>Please try again a few more times. If it still does not work, please let your tutor know.</h3>
         <?php endif ?>
         
-        <?php if ($tid != ""): ?>
+        <?php if ($slot_code != ""): ?>
             <h4>You were registered the following date:</h4>
-            <h1><?php echo giveDate($tid) . " at " . giveHour($tid) ?></h1>
+            <h1><?php echo giveDate($slot_code) . " at " . giveHour($slot_code) ?></h1>
         <?php endif ?>
     </form>
 </body>
