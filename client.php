@@ -10,7 +10,8 @@ $client->setAuthConfig(__DIR__ . '/credentials.json');
 
 $service = new Google_Service_Sheets($client);
 
-$spreadsheetId = "1oF6Pu1tK-8WcfDQzwkCQepPyBpanp319MTk1VSXzEUs";
+// $spreadsheetId = "1oF6Pu1tK-8WcfDQzwkCQepPyBpanp319MTk1VSXzEUs";
+$spreadsheetId =    "1oz_qADoxvvPhXdeG0LEa6Tckf_xltlAjljlMdRZiREQ";
 $sheet1 = "student";
 $sheet2 = "slot";
 $sheet3 = "fengling";
@@ -56,5 +57,7 @@ function updateSpreadSheet($value, $sheet, $range, $service, $spreadsheetId, $pa
     $new_values = [[$value]];
     $updateRange = $sheet . "!B" . $range;
     $body = new Google_Service_Sheets_ValueRange(['values' => $new_values]);
+    
     $result = $service->spreadsheets_values->update($spreadsheetId, $updateRange, $body, $params);
+    
 }

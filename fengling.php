@@ -12,37 +12,67 @@ $date = $hour = "";
 $inputErr = FALSE;
 
 // Query slot from spreadsheet
-$range = $sheet3 . "!A2:C25";
+// $sheet1 = "student";
+// $sheet2 = "slot";
+// $sheet3 = "fengling";
+$range = $sheet3 . "!A2:C25"; 
 $response = $service->spreadsheets_values->get($spreadsheetId, $range);
 $values = $response->getValues();
+
+
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $inputErr = TRUE;
     $date = $_POST["date"];
     $hour = $_POST["hour"];
+
     
     // Only query spreadsheet if there are date and hour.
     if ($date != "" && $hour != "") {
         $code = giveCode($date, $hour);
         
-        // Query slot again (concurency issue) from spreadsheet
         $response = $service->spreadsheets_values->get($spreadsheetId, $range);
         $values = $response->getValues();
 
+
+      
         // Check if the slot have been taken
         foreach ($values as $row) {
+            // loop each row to check if status is zero
             if ($code == $row[0]) {
                 if ($row[1] == 0) {
                     $inputErr = FALSE;
 
-                    // Update the Slot sheet
-                    updateSpreadSheet("1", $sheet3, $row[2], $service, $spreadsheetId, $params);
+                    // 2 threads pass this line at the same time 
+                    // then two threads cause unpredicted behaviour
 
+                    // Update the Slot sheet
+                $file=fopen("test.txt","w+");
+                if (!flock($file, LOCK_EX|LOCK_NB, $wouldblock)) {
+    
+                      
+                         if ($wouldblock) {
+                                // another process holds the lock
+                                // then may print err message 
+                                var_dump("LOCK BY ANOTHER PROCESS");
+                        }
+                        else {
+                        // couldn't lock for another reason, e.g. no such file
+                        }
+                }
+                else {
+                     // lock obtained  
+                    updateSpreadSheet("1", $sheet3, $row[2], $service, $spreadsheetId, $params);
                     // Update the Student sheet
                     updateSpreadSheet($row[0], $sheet1, $_SESSION['range'], $service, $spreadsheetId, $params);
-
+                    
                     session_unset();
                     header("Location: ./index.php");
+    
+                var_dump("OBTAIN LOCK");
+                    }
+                  
                 }
                 break;
             }
